@@ -1,7 +1,11 @@
 ---
 - include_tasks: "set-variables.yml"
 
-- include_tasks: "{{ ansible_os_family }}.yml"
+- name: Execute OS-specific tasks (rabbitmq)
+  block:
+    - include_tasks: "{{ ansible_os_family }}.yml"
+  module_defaults:
+    yum: { lock_timeout: 300 }
 
 - include_tasks: "set-erlang-cookie.yml"
   when: is_clustered and groups['rabbitmq'] | length > 1
