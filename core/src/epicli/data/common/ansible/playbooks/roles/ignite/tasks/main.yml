@@ -11,14 +11,11 @@
     name: ignite
     group: ignite
 
-- name: Install Java package
-  package:
-    name: "{{ package_name[ansible_os_family] }}"
-    state: present
-  vars:
-    package_name:
-      Debian: openjdk-8-jre-headless
-      RedHat: java-1.8.0-openjdk-headless
+- name: Execute OS-specific tasks (ignite)
+  block:
+    - include_tasks: "{{ ansible_os_family }}.yml"
+  module_defaults:
+    yum: { lock_timeout: 300 }
 
 - name: Get path to set JAVA_HOME variable
   shell: "which java | xargs readlink -f | xargs dirname | xargs dirname"
