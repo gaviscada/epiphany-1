@@ -1,5 +1,8 @@
 ---
 # This file is meant to be also used by upgrade playbook
 
-- name: Install Elasticsearch Curator ({{ ansible_os_family }})
-  include_tasks: "{{ ansible_os_family }}.yml"
+- name: Execute OS-specific tasks (elasticsearch-curator)
+  block:
+    - include_tasks: "{{ ansible_os_family }}.yml"
+  module_defaults:
+    yum: { lock_timeout: 300 }
