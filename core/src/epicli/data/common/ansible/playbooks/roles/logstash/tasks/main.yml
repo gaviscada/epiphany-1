@@ -1,6 +1,9 @@
 ---
-- name: Install logstash-oss
-  include_tasks: "{{ ansible_os_family }}.yml"
+- name: Execute OS-specific tasks (logstash)
+  block:
+    - include_tasks: "{{ ansible_os_family }}.yml"
+  module_defaults:
+    yum: { lock_timeout: 300 }
 
 - name: Ensure Logstash is disabled
   systemd:
