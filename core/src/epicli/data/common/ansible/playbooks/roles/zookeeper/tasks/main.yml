@@ -13,17 +13,11 @@
     system: yes
     shell: "/usr/sbin/nologin"
 
-- name: Install Java package
-  package:
-    name: "java-1.8.0-openjdk-headless"
-    state: present
-  when: ansible_os_family == "RedHat"
-
-- name: Install Java package
-  package:
-    name: "openjdk-8-jre-headless"
-    state: present
-  when: ansible_os_family == "Debian"
+- name: Execute OS-specific tasks (zookeeper)
+  block:
+    - include_tasks: "{{ ansible_os_family }}.yml"
+  module_defaults:
+    yum: { lock_timeout: 300 }
 
 - name: Check if jmx exporter is available
   stat:
@@ -145,4 +139,3 @@
 
 - include_tasks: metrics.yml
   when: exporter.stat.exists
-
