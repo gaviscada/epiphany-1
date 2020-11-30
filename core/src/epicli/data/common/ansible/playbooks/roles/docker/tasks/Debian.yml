@@ -1,0 +1,9 @@
+---
+- name: Install Docker packages (Debian)
+  apt:
+    name:
+      - containerd.io
+      - docker-ce-cli={{ docker_version.Debian }}
+      - docker-ce={{ docker_version.Debian }}
+    update_cache: true
+    state: present

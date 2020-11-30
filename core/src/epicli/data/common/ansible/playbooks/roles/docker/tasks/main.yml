@@ -1,18 +1,10 @@
 ---
 # Docker (used by master & worker as dependency)
 
-- name: Install Docker packages
-  package:
-    name: "{{ packages[ansible_os_family] }}"
-    state: present
-  vars:
-    packages:
-      RedHat:
-      - docker-ce-cli-{{ docker_version.RedHat }}
-      - docker-ce-{{ docker_version.RedHat }}
-      Debian:
-      - containerd.io
-      - docker-ce-cli={{ docker_version.Debian }}
-      - docker-ce={{ docker_version.Debian }}
+- name: Execute OS-specific tasks (docker)
+  block:
+    - include_tasks: "{{ ansible_os_family }}.yml"
+  module_defaults:
+    yum: { lock_timeout: 300 }
 
 - include_tasks: configure-docker.yml
