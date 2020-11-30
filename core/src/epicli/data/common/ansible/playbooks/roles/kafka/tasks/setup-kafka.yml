@@ -12,18 +12,11 @@
     group: "{{ specification.kafka_var.group }}"
     shell: "/usr/sbin/nologin"
 
-
-- name: Install Java package
-  package:
-    name: "java-1.8.0-openjdk-headless"
-    state: present
-  when: ansible_os_family == "RedHat"
-
-- name: Install Java package
-  package:
-    name: "openjdk-8-jre-headless"
-    state: present
-  when: ansible_os_family == "Debian"
+- name: Execute OS-specific tasks (kafka)
+  block:
+    - include_tasks: "{{ ansible_os_family }}.yml"
+  module_defaults:
+    yum: { lock_timeout: 300 }
 
 - name: Set Kafka file name to install
   set_fact:
