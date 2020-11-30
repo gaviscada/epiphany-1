@@ -13,11 +13,17 @@
     - { limit_type: 'soft', limit_item: 'memlock', value: unlimited }
     - { limit_type: 'hard', limit_item: 'memlock', value: unlimited }
 
-- name: Include elasticsearch-oss installation task
-  include_tasks: "install-es-{{ ansible_os_family }}.yml"
+- name: Execute OS-specific tasks (elasticsearch-oss)
+  block:
+    - include_tasks: "install-es-{{ ansible_os_family }}.yml"
+  module_defaults:
+    yum: { lock_timeout: 300 }
 
-- name: Include opendistro-* plugins installation task
-  include_tasks: "install-opendistro-{{ ansible_os_family }}.yml"
+- name: Execute OS-specific tasks (opendistro-*)
+  block:
+    - include_tasks: "install-opendistro-{{ ansible_os_family }}.yml"
+  module_defaults:
+    yum: { lock_timeout: 300 }
 
 - name: Include configuration tasks
   include_tasks: configure-es.yml

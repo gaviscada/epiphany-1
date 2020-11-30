@@ -3,5 +3,6 @@
   apt:
     name:
       - elasticsearch-oss={{ versions[ansible_os_family].elasticsearch_oss }}
+    update_cache: true
     state: present
   register: install_elasticsearch_package

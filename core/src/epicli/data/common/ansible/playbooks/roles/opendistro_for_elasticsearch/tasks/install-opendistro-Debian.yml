@@ -9,5 +9,6 @@
       - opendistro-performance-analyzer={{ versions[ansible_os_family].opendistro }}
       - opendistro-security={{ versions[ansible_os_family].opendistro }}
       - opendistro-sql={{ versions[ansible_os_family].opendistro }}
+    update_cache: true
     state: present
   register: install_opendistro_packages
