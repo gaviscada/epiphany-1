@@ -1,5 +1,9 @@
 ---
-- include_tasks: install-packages.yml
+- name: Execute OS-specific tasks (kubernetes_common)
+  block:
+    - include_tasks: "install-packages-{{ ansible_os_family }}.yml"
+  module_defaults:
+    yum: { lock_timeout: 300 }
 
 - name: Enable ip forwarding
   sysctl:

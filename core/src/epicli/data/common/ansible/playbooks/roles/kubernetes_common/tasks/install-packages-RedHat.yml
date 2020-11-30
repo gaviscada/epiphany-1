@@ -1,9 +1,12 @@
 ---
-- name: Install NFS package for RedHat family
+- name: Install storage packages for RedHat family
   yum:
     name:
+      - cifs-utils
+      - samba-client
+      - samba-common
       - nfs-utils
-    update_cache: yes
+    update_cache: true
     state: present
 
 - name: Install Kubernetes packages for RedHat family
@@ -13,5 +16,4 @@
       - kubectl-{{ specification.version }}-0
       - kubeadm-{{ specification.version }}-0
       - kubernetes-cni-{{ specification.cni_version }}-0
-    update_cache: yes
     state: present

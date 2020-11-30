@@ -1,8 +1,12 @@
 ---
-- name: Install NFS package for Debian family
+- name: Install storage packages for Debian family
   apt:
     name:
+      - cifs-utils
+      - samba-client
+      - samba-common
       - nfs-common
+    update_cache: true
     state: present
 
 - name: Install Kubernetes packages for Debian family
