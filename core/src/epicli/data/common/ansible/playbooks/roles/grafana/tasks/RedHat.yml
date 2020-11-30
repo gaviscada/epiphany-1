@@ -1,0 +1,12 @@
+---
+- name: Remove conflicting grafana packages
+  yum:
+    name: grafana-data
+    update_cache: true
+    state: absent
+
+- name: Install Grafana
+  yum:
+    name:
+      - grafana-{{ grafana_version }}
+    state: present
