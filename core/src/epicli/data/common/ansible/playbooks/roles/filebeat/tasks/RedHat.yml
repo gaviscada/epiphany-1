@@ -11,6 +11,5 @@
   yum:
     name:
       - audit
-    update_cache: true
     state: present
   register: install_auditd_package

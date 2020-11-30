@@ -11,7 +11,6 @@
   apt:
     name:
       - auditd
-    update_cache: true
     state: present
   register: install_auditd_package
   until: install_auditd_package is success
