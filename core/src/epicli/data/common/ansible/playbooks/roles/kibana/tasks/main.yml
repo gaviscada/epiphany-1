@@ -4,10 +4,13 @@
     file: roles/opendistro_for_elasticsearch/defaults/main.yml
     name: opendistro_for_elasticsearch_defaults
 
-- name: Include Kibana package installation task
-  include_tasks: "{{ ansible_os_family }}.yml"
+- name: Execute OS-specific tasks (kibana)
+  block:
+    - include_tasks: "{{ ansible_os_family }}.yml"
   vars:
     kibana_package_version: "{{ opendistro_for_elasticsearch_defaults.versions[ansible_os_family].opendistro }}"
+  module_defaults:
+    yum: { lock_timeout: 300 }
 
 - name: Update Kibana configuration file
   template:
