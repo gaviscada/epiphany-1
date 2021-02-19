@@ -142,6 +142,15 @@
         name: upgrade
         tasks_from: kibana
 
+- hosts: grafana
+  become: true
+  become_method: sudo
+  serial: 1
+  tasks:
+    - import_role:
+        name: upgrade
+        tasks_from: grafana
+
 - hosts: zookeeper
   serial: 1
   become: true
@@ -169,6 +178,15 @@
     - import_role:
         name: upgrade
         tasks_from: rabbitmq
+      vars: { lock_file: /var/tmp/rabbitmq-upgrade-in-progress.flag }
+
+- hosts: ignite
+  become: true
+  become_method: sudo
+  tasks:
+    - import_role:
+        name: upgrade
+        tasks_from: ignite
 
 - hosts: haproxy
   become: true

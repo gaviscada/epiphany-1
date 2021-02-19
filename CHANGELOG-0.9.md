@@ -1,10 +1,12 @@
 # Changelog 0.9
 
-## [0.9.0] YYYY-MM-DD
+## [0.9.0] 2021-01-19
 
 ### Added
 
 - [#921](https://github.com/epiphany-platform/epiphany/issues/921) - Implement log rotation for PgBouncer
+- [#1911](https://github.com/epiphany-platform/epiphany/issues/1911) - Ability to deploy Istio
+- [#1756](https://github.com/epiphany-platform/epiphany/issues/1756) - Separate role vars and manifest vars generation during upgrades
 
 ### Fixed
 
@@ -21,16 +23,26 @@
 - [#1888](https://github.com/epiphany-platform/epiphany/issues/1888) - epicli upgrade of cluster created by Epiphany v0.5 may fail
 - [#1884](https://github.com/epiphany-platform/epiphany/issues/1884) - Prometheus is not able to scrape metrics from AKS/EKS nodes
 - [#1887](https://github.com/epiphany-platform/epiphany/issues/1887) - epicli upgrade of cluster created by Epiphany v0.6 fails on "Store preflight facts" task
+- [#1866](https://github.com/epiphany-platform/epiphany/issues/1866) - No logs from K8s apps in Elasticsearch
 
 ### Updated
 
 - [#1770](https://github.com/epiphany-platform/epiphany/issues/1770) - Upgrade Filebeat to the latest version (7.9.2)
 - [#1848](https://github.com/epiphany-platform/epiphany/issues/1848) - Update Ansible to v2.8.17
 - [#1854](https://github.com/epiphany-platform/epiphany/issues/1854) - Upgrade RabbitMQ to the latest version (3.8.9)
-- [#1137](https://github.com/epiphany-platform/epiphany/issues/1137) - Upgrade Kafka to 2.6.0
+- [#1137](https://github.com/epiphany-platform/epiphany/issues/1137) - Upgrade Kafka to v2.6.0
 - [#1855](https://github.com/epiphany-platform/epiphany/issues/1855) - Upgrade Docker to v19.03.14
-- [#1853](https://github.com/epiphany-platform/epiphany/issues/1853) - Upgrade Zookeeper to 3.5.8
+- [#1853](https://github.com/epiphany-platform/epiphany/issues/1853) - Upgrade Zookeeper to v3.5.8
+- [#1860](https://github.com/epiphany-platform/epiphany/issues/1860) - Upgrade Grafana to v7.3.5
+- [#1955](https://github.com/epiphany-platform/epiphany/issues/1955) - Upgrade Elasticsearch Curator to v5.8.3
+
+### Deprecated
+
+- Elasticsearch OSS v6 (feature name: `elasticsearch`), succesor: Elasticsearch OSS v7 (feature name: `opendistro-for-elasticsearch`). It may be removed in the next major release.
 
 ### Breaking changes
 
 ### Known issues
+
+- [#1979](https://github.com/epiphany-platform/epiphany/issues/1979) - RabbitMQ fails on upgrade when there are multiple non-clustered nodes
+- [#1984](https://github.com/epiphany-platform/epiphany/issues/1984) - RabbitMQ 3.7.10 fails on upgrade to 3.8.9: 'rabbitmqctl version' command not found
