@@ -11,8 +11,10 @@
     - [Note about PostgreSQL preflight check](./howto/PREREQUISITES.md#note-about-postgresql-preflight-check)
 
 - [Epiphany cluster](./howto/CLUSTER.md)
+  - [How to enable/disable Epiphany repository VM](./howto/CLUSTER.md#how-to-enabledisable-epiphany-repository-vm)
   - [How to create an Epiphany cluster on existing infrastructure](./howto/CLUSTER.md#how-to-create-an-epiphany-cluster-on-existing-infrastructure)
   - [How to create an Epiphany cluster on existing airgapped infrastructure](./howto/CLUSTER.md#how-to-create-an-epiphany-cluster-on-existing-airgapped-infrastructure)
+  - [How to create an Epiphany cluster using custom system repository and Docker image registry](./howto/CLUSTER.md#how-to-create-an-epiphany-cluster-using-custom-system-repository-and-docker-image-registry)
   - [How to create an Epiphany cluster on a cloud provider](./howto/CLUSTER.md#how-to-create-an-epiphany-cluster-on-a-cloud-provider)
     - [Note for RHEL / CentOS Azure images](./howto/CLUSTER.md#note-for-rhel--centos-azure-images)
   - [How to delete an Epiphany cluster on a cloud provider](./howto/CLUSTER.md#how-to-delete-an-epiphany-cluster-on-a-cloud-provider)
@@ -74,7 +76,7 @@
 - [Databases](./howto/DATABASES.md)
   - [How to migrate from PostgreSQL installed from Software Collections to installed from PostgreSQL repository](./howto/DATABASES.md#how-to-migrate-from-postgresql-installed-from-software-collections-to-installed-from-postgresql-repository)
   - [How to configure PostgreSQL](./howto/DATABASES.md#how-to-configure-postgresql)
-  - [How to configure PostgreSQL replication](./howto/DATABASES.md#how-to-configure-postgresql-replication)
+  - [How to configure PostgreSQL replication](./howto/DATABASES.md#how-to-set-up-postgresql-ha-replication-with-repmgr-cluster)
   - [How to set up PostgreSQL connection pooling](./howto/DATABASES.md#how-to-set-up-postgresql-connection-pooling)
   - [How to register database standby in repmgr cluster](./howto/DATABASES.md#how-to-register-database-standby-in-repmgr-cluster)
   - [How to switchover database nodes](./howto/DATABASES.md#how-to-switchover-database-nodes)
@@ -118,4 +120,4 @@
   - [AWS Security groups](./howto/SECURITY_GROUPS.md#aws-security-groups)
   - [AWS Security groups full yaml file](./howto/SECURITY_GROUPS.md#aws-setting-groups-full-yaml-file)
 
-- [Modules](./howto/modules.md)
+- [Modules](./howto/MODULES.md)

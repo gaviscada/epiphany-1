@@ -113,9 +113,7 @@ The `epicli upgrade` command had an additional flag `--wait-for-pods`. When this
 
 ### Kafka upgrade
 
-No downtime upgrades are possible to achieve when upgrading Kafka, but before you start thinking about upgrading you have to think about your topics configuration. Kafka topics are distributed accross partitions with replication. Default value for replication is 3, it means each partition will be replicated to 3 brokers. You should remember to enable redundancy and keep **at least two replicas all the time**, it is important when upgrading Kafka cluser. When one of your Kafka nodes will be down during upgrade ZooKeeper will direct your producers and consumers to working instances - having replicated partitions on working nodes will ensure no downtime and no data loss work.
-
-Upgrading Kafka could be different for every Kafka release, please refer to [Apache Kafka documentation](https://kafka.apache.org/documentation/#upgrade). Important point to remember during Kafka upgrade is the rule: **only one broker at the time** - to prevent downtime you should uprage you Kafka brokers one by one.
+Kafka will be automatically updated to the latest version supported by Epiphany. You can check latest supported version [here](../COMPONENTS.md#epiphany-cluster-components). Kafka brokers are updated one by one - but the update procedure does not guarantee "zero downtime" because it depends on the number of available brokers, topic, and partitioning configuration.
 
 ### ZooKeeper upgrade
 
@@ -152,3 +150,20 @@ Before upgrade procedure make sure you have a data backup and you are familiar w
 
 Starting from Epiphany v0.8.0 it's possible to upgrade node exporter to v1.0.1.
 Upgrade will be performed automatically when the upgrade procedure detects node exporter hosts.
+
+## RabbitMQ upgrade
+
+---
+**NOTE**
+
+Before upgrade procedure make sure you have a data backup.
+Check that the node or cluster is in a good state: no alarms are in effect,
+no ongoing queue synchronisation operations and the system is otherwise under a reasonable load.
+For more information visit RabbitMQ [site](https://www.rabbitmq.com/upgrade.html).
+
+---
+
+With the latest Epiphany version it's possible to upgrade RabbitMQ to v3.8.9.
+It requires Erlang system packages upgrade that is done automatically to v23.1.4.
+Upgrade is performed in offline mode after stopping all RabbitMQ nodes.
+[Rolling upgrade](https://www.rabbitmq.com/upgrade.html#rolling-upgrades) is not supported by Epiphany and it is advised not to use this approach when Erlang needs to be upgraded.

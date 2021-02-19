@@ -1,11 +1,119 @@
+## How to enable/disable Epiphany repository VM
+
+Enable for Ubuntu (default):
+
+1. Enable "repository" component:
+   ```yaml
+   repository:
+     count: 1
+   ```
+
+Enable for RHEL on Azure:
+
+1. Enable "repository" component:
+   ```yaml
+   repository:
+     count: 1
+     machine: repository-machine-rhel
+   ```
+2. Add repository VM definition to main config file:
+   ```yaml
+   kind: infrastructure/virtual-machine
+   name: repository-machine-rhel
+   provider: azure
+   based_on: repository-machine
+   specification:
+     storage_image_reference:
+       publisher: RedHat
+       offer: RHEL
+       sku: 7-RAW
+       version: "7.7.2019090418"
+   ```
+
+Enable for RHEL on AWS:
+
+1. Enable "repository" component:
+   ```yaml
+   repository:
+     count: 1
+     machine: repository-machine-rhel
+   ```
+2. Add repository VM definition to main config file:
+   ```yaml
+   kind: infrastructure/virtual-machine
+   title: Virtual Machine Infra
+   name: repository-machine-rhel
+   provider: aws
+   based_on: repository-machine
+   specification:
+     os_full_name: RHEL-7.8_HVM_GA-20200225-x86_64-1-Hourly2-GP2
+   ```
+
+Enable for CentOS on Azure:
+
+1. Enable "repository" component:
+   ```yaml
+   repository:
+     count: 1
+     machine: repository-machine-centos
+   ```
+2. Add repository VM definition to main config file:
+   ```yaml
+   kind: infrastructure/virtual-machine
+   name: repository-machine-centos
+   provider: azure
+   based_on: repository-machine
+   specification:
+     storage_image_reference:
+       publisher: OpenLogic
+       offer: CentOS
+       sku: "7_8"
+       version: "7.8.2020100700"
+   ```
+
+Enable for CentOS on AWS:
+
+1. Enable "repository" component:
+   ```yaml
+   repository:
+     count: 1
+     machine: repository-machine-centos
+   ```
+2. Add repository VM definition to main config file:
+   ```yaml
+   kind: infrastructure/virtual-machine
+   title: Virtual Machine Infra
+   name: repository-machine-centos
+   provider: aws
+   based_on: repository-machine
+   specification:
+     os_full_name: "CentOS 7.8.2003 x86_64"
+   ```
+
+Disable:
+
+1. Disable "repository" component:
+   ```yaml
+   repository:
+     count: 0
+   ```
+2. Prepend "kubernetes\_master" mapping (or any other mapping if you don't deploy Kubernetes) with:
+   ```yaml
+   kubernetes_master:
+     - repository
+     - image-registry
+   ```
+
 ## How to create an Epiphany cluster on existing infrastructure
+
+*Please read first prerequisites related to [hostnames requirements](./PREREQUISITES.md#hostnames-requirements).*
 
 Epicli has the ability to setup a cluster on infrastructure provided by you. These can be either bare metal machines or VM's and should meet the following requirements:
 
 *Note. Hardware requirements are not listed since this dependends on use-case, component configuration etc.*
 
-1. The cluster machines/vm`s are connected by a network or virtual network of some sorts and can communicate which each other and have access to the internet.
-2. The cluster machines/vm`s are running one of the following Linux distributions:
+1. The cluster machines/vm's are connected by a network or virtual network of some sorts and can communicate which each other and have access to the internet.
+2. The cluster machines/vm's are running one of the following Linux distributions:
     - RedHat 7.6+ and < 8
     - CentOS 7.6+ and < 8
     - Ubuntu 18.04
@@ -73,11 +181,13 @@ To setup the cluster do the following steps from the provisioning machine:
 
 ## How to create an Epiphany cluster on existing airgapped infrastructure
 
+*Please read first prerequisites related to [hostnames requirements](./PREREQUISITES.md#hostnames-requirements).*
+
 Epicli has the ability to setup a cluster on airgapped infrastructure provided by you. These can be either bare metal machines or VM's and should meet the following requirements:
 
 *Note. Hardware requirements are not listed since this dependends on use-case, component configuration etc.*
 
-1. The airgapped cluster machines/vm`s are connected by a network or virtual network of some sorts and can communicate which each other:
+1. The airgapped cluster machines/VMs are connected by a network or virtual network of some sorts and can communicate which each other.
 2. The airgapped cluster machines/vm`s are running one of the following Linux distributions:
     - RedHat 7.6+ and < 8
     - CentOS 7.6+ and < 8
@@ -166,7 +276,96 @@ To setup the cluster do the following steps:
 
     This will create the inventory for Ansible based on the component/machine definitions made inside the `newcluster.yml` and let Absible deploy it. Note that the `--no-infra` is important since it tells Epicli to skip the Terraform part. The `--offline-requirements` tells Epicli it is an airgapped installation and to use the  `/requirementsoutput/` requirements folder prepared in steps 1 and 2 as source for all requirements.
 
+## How to create an Epiphany cluster using custom system repository and Docker image registry
+
+Epiphany has the ability to use external repository and image registry during `epicli apply` execution.
+
+Custom urls need to be specified inside the `configuration/shared-config` document, for example:
+
+```yaml
+kind: configuration/shared-config
+title: Shared configuration that will be visible to all roles
+name: default
+specification:
+  custom_image_registry_address: "10.50.2.1:5000"
+  custom_repository_url: "http://10.50.2.1:8080/epirepo"
+  use_ha_control_plane: true
+```
+
+The repository and image registry implementation must be compatible with already existing Ansible code:
+
+- the repository data (including apt or yum repository) is served from HTTP server and structured exactly as in the offline package
+- the image registry data is loaded into and served from standard Docker registry implementation
+
+*Note. If both custom repository/registry and offline installation are configured then the custom repository/registry is preferred.*
+
+*Note. You can switch between custom repository/registry and offline/online installation methods. Keep in mind this will cause "imageRegistry" change in Kubernetes which in turn may cause short downtime.*
+
+By default Epiphany creates "repository" virtual machine for cloud environments. When custom repository and registry are used there is no need for additional empty VM.
+The following config snippet can illustrate how to mitigate this problem:
+
+```yaml
+kind: epiphany-cluster
+title: Epiphany cluster Config
+provider: <provider>
+name: default
+specification:
+  ...
+  components:
+    repository:
+      count: 0
+    kubernetes_master:
+      count: 1
+    kubernetes_node:
+      count: 2
+---
+kind: configuration/feature-mapping
+title: "Feature mapping to roles"
+provider: <provider>
+name: default
+specification:
+  roles_mapping:
+    kubernetes_master:
+      - repository
+      - image-registry
+      - kubernetes-master
+      - helm
+      - applications
+      - node-exporter
+      - filebeat
+      - firewall
+      - vault
+---
+kind: configuration/shared-config
+title: Shared configuration that will be visible to all roles
+provider: <provider>
+name: default
+specification:
+  custom_image_registry_address: "<ip-address>:5000"
+  custom_repository_url: "http://<ip-address>:8080/epirepo"
+```
+
+1. Disable "repository" component:
+   ```yaml
+   repository:
+     count: 0
+   ```
+2. Prepend "kubernetes\_master" mapping (or any other mapping if you don't deploy Kubernetes) with:
+   ```yaml
+   kubernetes_master:
+     - repository
+     - image-registry
+   ```
+3. Specify custom repository/registry in `configuration/shared-config`:
+   ```yaml
+   specification:
+     custom_image_registry_address: "<ip-address>:5000"
+     custom_repository_url: "http://<ip-address>:8080/epirepo"
+   ```
+
 ## How to create an Epiphany cluster on a cloud provider
+
+*Please read first prerequisites related to [hostnames requirements](./PREREQUISITES.md#hostnames-requirements).*
 
 Epicli has the ability to setup a cluster on one of the following cloud providers:
 
@@ -332,6 +531,8 @@ Epicli has a delete command to remove a cluster from a cloud provider (AWS, Azur
 From the defined cluster build folder it will take the information needed to remove the resources from the cloud provider.
 
 ## Single machine cluster
+
+*Please read first prerequisites related to [hostnames requirements](./PREREQUISITES.md#hostnames-requirements).*
 
 ---
 **NOTE**
@@ -578,7 +779,10 @@ Then when applying the changed configuration using Epicli additional VM's will b
     ...
   ```
 
-- rabbitmq: At the moment scaling is not supported, there is an [issue](https://github.com/epiphany-platform/epiphany/issues/1578). When changed this will setup or remove additional nodes for the RabbitMQ cluster. Note that this will require to enable clustering in the `configuration/rabbitmq` configuration:
+- rabbitmq: At the moment downscaling is not supported, there is the known
+[issue](https://github.com/epiphany-platform/epiphany/issues/1578).
+If instance count is changed, then additional RabbitMQ nodes will be added or removed.
+Note that clustering requires a change in the `configuration/rabbitmq` document:
 
   ```yaml
   kind: configuration/rabbitmq

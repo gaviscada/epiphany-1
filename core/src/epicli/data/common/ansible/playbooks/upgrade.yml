@@ -108,6 +108,8 @@
         name: upgrade
         tasks_from: filebeat
       when: groups.logging is defined # do not upgrade if there is legacy Elasticsearch (v6)
+  environment:
+    KUBECONFIG: "{{ kubeconfig.local }}"
 
 - hosts: logging
   become: true
@@ -140,6 +142,25 @@
         name: upgrade
         tasks_from: kibana
 
+- hosts: grafana
+  become: true
+  become_method: sudo
+  serial: 1
+  tasks:
+    - import_role:
+        name: upgrade
+        tasks_from: grafana
+
+- hosts: zookeeper
+  serial: 1
+  become: true
+  become_method: sudo
+  tasks:
+    - import_role:
+        name: upgrade
+        tasks_from: zookeeper
+      vars: { lock_file: /var/tmp/zookeeper-upgrade-in-progress.flag }
+
 - hosts: kafka
   serial: 1
   become: true
@@ -149,6 +170,14 @@
         name: upgrade
         tasks_from: kafka
       vars: { lock_file: /var/tmp/kafka-upgrade-in-progress.flag }
+
+- hosts: rabbitmq
+  become: true
+  become_method: sudo
+  tasks:
+    - import_role:
+        name: upgrade
+        tasks_from: rabbitmq
 
 - hosts: haproxy
   become: true
@@ -165,3 +194,5 @@
     - import_role:
         name: upgrade
         tasks_from: node-exporter
+  environment:
+    KUBECONFIG: "{{ kubeconfig.local }}"
